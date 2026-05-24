@@ -1,5 +1,3 @@
-/* css/admin-dashboard.css */
-
 :root {
     --f1-red: #e10600;
     --f1-bg-main: #15151e;
@@ -91,6 +89,90 @@
 
 .admin-btn.danger:hover {
     background: #555;
+}
+
+/* ========================================= */
+/* Interactive Headers & Search Styling      */
+/* ========================================= */
+
+.clickable-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.clickable-title h2 {
+    margin: 0;
+    transition: color 0.2s ease;
+}
+
+.clickable-title:hover h2 {
+    color: var(--success-cyan);
+}
+
+.toggle-icon {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: transform 0.3s ease, color 0.2s ease;
+}
+
+.clickable-title:hover .toggle-icon {
+    color: var(--success-cyan);
+}
+
+.toggle-icon.minimized {
+    transform: rotate(-90deg);
+}
+
+.premium-search-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+    min-width: 250px;
+}
+
+.premium-search-wrapper svg {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    fill: var(--text-muted);
+    width: 16px;
+    height: 16px;
+    transition: fill 0.3s ease;
+    pointer-events: none;
+}
+
+.premium-search-input {
+    width: 100%;
+    padding: 12px 15px 12px 42px;
+    border-radius: 30px;
+    border: 1px solid #333;
+    background: #111;
+    color: var(--text-light);
+    font-family: 'Titillium Web', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.premium-search-input::placeholder {
+    color: #666;
+}
+
+.premium-search-input:focus {
+    outline: none;
+    border-color: var(--success-cyan);
+    box-shadow: 0 0 15px rgba(0, 210, 190, 0.15), inset 0 2px 5px rgba(0,0,0,0.5);
+    background: #1a1a24;
+}
+
+.premium-search-wrapper:focus-within svg {
+    fill: var(--success-cyan);
 }
 
 /* Data Tables */

@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($row = $result->fetch_assoc()) {
         if ($password === $row['password']) {
             $_SESSION['user_id'] = $row['id'];
+            logUserAction($conn, $row['id'], "Logged into Pit Wall");
             header("Location: dashboard.php");
             exit();
         } else {

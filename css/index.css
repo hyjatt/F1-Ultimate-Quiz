@@ -206,3 +206,23 @@ p {
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* ========================================= */
+/* Difficulty Dropdown Fix                   */
+/* ========================================= */
+
+/* Force options to have a dark background and white text */
+select#difficulty-select option {
+    background-color: var(--card-bg);
+    color: var(--text-light) !important;
+    font-weight: 700;
+}
+
+/* Override the secondary-btn hover effect for the select element */
+select#difficulty-select:hover,
+select#difficulty-select:focus {
+    background-color: var(--card-bg) !important;
+    color: var(--text-light) !important;
+    border-color: var(--f1-red);
+    outline: none;
+}

@@ -1,7 +1,8 @@
 // State Variables
 let sessionQuestions = [];
 let currentQuestionIndex = 0;
-let score = 0;
+let correctAnswers = 0;
+let pointsPerQuestion = 10;
 
 // DOM Elements
 const startScreen = document.getElementById('start-screen');
@@ -19,6 +20,7 @@ const progressFill = document.getElementById('progress-fill');
 
 const scoreText = document.getElementById('score-text');
 const totalText = document.getElementById('total-text');
+const pointsText = document.getElementById('points-text');
 const feedbackText = document.getElementById('feedback-text');
 
 // Event Listeners
@@ -53,16 +55,22 @@ async function startQuiz() {
     questionText.textContent = "Loading telemetry data...";
     quizScreen.classList.add('active');
 
+    // Retrieve difficulty and set points per question
+    const difficulty = document.getElementById('difficulty-select').value;
+    if (difficulty === 'easy') pointsPerQuestion = 10;
+    else if (difficulty === 'medium') pointsPerQuestion = 20;
+    else if (difficulty === 'hard') pointsPerQuestion = 30;
+
     try {
-        const response = await fetch('get_questions.php');
+        const response = await fetch(`get_questions.php?difficulty=${difficulty}`);
         const data = await response.json();
         
         sessionQuestions = data;
         currentQuestionIndex = 0;
-        score = 0;
+        correctAnswers = 0;
 
         if (sessionQuestions.length === 0) {
-            questionText.textContent = "No telemetry data found. Admin must add questions.";
+            questionText.textContent = `No telemetry data found for ${difficulty} pace. Admin must add questions.`;
             return;
         }
 
@@ -77,14 +85,12 @@ function loadQuestion() {
     nextBtn.classList.add('hide');
     optionsContainer.innerHTML = '';
     
-    // Pull from the randomized 10-question session array
     const currentQ = sessionQuestions[currentQuestionIndex];
     questionText.textContent = currentQ.question;
     
     questionTracker.textContent = `Question ${currentQuestionIndex + 1}/${sessionQuestions.length}`;
     progressFill.style.width = `${((currentQuestionIndex + 1) / sessionQuestions.length) * 100}%`;
 
-    // Optionally shuffle the options themselves so the answer isn't always in the same place
     let shuffledOptions = [...currentQ.options];
     shuffleArray(shuffledOptions);
 
@@ -102,7 +108,7 @@ function selectAnswer(selectedButton, selectedOption, correctAnswer) {
     
     if (isCorrect) {
         selectedButton.classList.add('correct');
-        score++;
+        correctAnswers++;
     } else {
         selectedButton.classList.add('incorrect');
     }
@@ -122,11 +128,17 @@ function showResults() {
     quizScreen.classList.remove('active');
     resultScreen.classList.add('active');
     
-    scoreText.textContent = score;
+    // Calculate final points
+    const finalPoints = correctAnswers * pointsPerQuestion;
+
+    scoreText.textContent = correctAnswers;
     totalText.textContent = sessionQuestions.length;
+    pointsText.textContent = finalPoints;
 
     const formData = new FormData();
-    formData.append('score', score);
+    formData.append('score', finalPoints);
+    formData.append('correct', correctAnswers);
+    formData.append('difficulty', document.getElementById('difficulty-select').value);
 
     fetch('update_score.php', {
         method: 'POST',
@@ -136,10 +148,9 @@ function showResults() {
     .then(data => console.log('Points updated.'))
     .catch(error => console.error('Error updating points:', error));
 
-    // Dynamic feedback scaled to the new 10-question limit
-    if (score === sessionQuestions.length) {
+    if (correctAnswers === sessionQuestions.length) {
         feedbackText.textContent = "Flawless victory! A true Grand Slam.";
-    } else if (score >= 7) {
+    } else if (correctAnswers >= sessionQuestions.length * 0.7) {
         feedbackText.textContent = "Solid points finish. You know your stuff!";
     } else {
         feedbackText.textContent = "Tough race. Time to head back to the simulator.";

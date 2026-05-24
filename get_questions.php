@@ -1,11 +1,15 @@
 <?php
 require 'db.php';
-
 header('Content-Type: application/json');
 
-// Fetch 10 random questions
-$query = "SELECT * FROM questions ORDER BY RAND() LIMIT 10";
-$result = $conn->query($query);
+// Capture difficulty from frontend, default to medium
+$difficulty = isset($_GET['difficulty']) ? $_GET['difficulty'] : 'medium';
+
+// Fetch random questions matching the difficulty
+$stmt = $conn->prepare("SELECT * FROM questions WHERE difficulty = ? ORDER BY RAND() LIMIT 10");
+$stmt->bind_param("s", $difficulty);
+$stmt->execute();
+$result = $stmt->get_result();
 
 $questions = [];
 while ($row = $result->fetch_assoc()) {
@@ -23,4 +27,4 @@ while ($row = $result->fetch_assoc()) {
 }
 
 echo json_encode($questions);
-?>
+?>  

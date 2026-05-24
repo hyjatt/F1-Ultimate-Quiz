@@ -26,6 +26,20 @@ $rank_stmt->bind_param("i", $user_data['super_license_points']);
 $rank_stmt->execute();
 $rank_data = $rank_stmt->get_result()->fetch_assoc();
 $current_rank = "P" . ($rank_data['rank'] + 1);
+
+// Driver Classification Rank
+$pts = $user_data['super_license_points'];
+if ($pts < 300) { 
+    $player_rank = "ROOKIE"; 
+} elseif ($pts < 500) { 
+    $player_rank = "PRO"; 
+} else { 
+    $player_rank = "LEGEND"; 
+}
+
+// Constructor Standings (Team Score)
+$team_standings_query = "SELECT team, SUM(super_license_points) as team_points FROM users GROUP BY team ORDER BY team_points DESC";
+$team_standings_result = $conn->query($team_standings_query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,14 +66,25 @@ $current_rank = "P" . ($rank_data['rank'] + 1);
             <div class="card-header">
                 <h2>LIVE TELEMETRY</h2>
             </div>
-            <div class="score-display">
+            <div class="score-display" style="flex-wrap: wrap;">
                 <div class="data-point">
-                    <span class="label">SUPER LICENSE POINTS</span>
+                    <span class="label">DRIVER RANK</span>
+                    <span class="value" style="color: var(--success-cyan); font-size: 1.8rem;"><?php echo $player_rank; ?></span>
+                </div>
+                <div class="data-point">
+                    <span class="label">TOTAL SCORE (PTS)</span>
                     <span class="value"><?php echo $user_data['super_license_points']; ?></span>
                 </div>
                 <div class="data-point">
-                    <span class="label">CURRENT RANK</span>
+                    <span class="label">GRID POSITION</span>
                     <span class="value"><?php echo $current_rank; ?></span>
+                </div>
+                <div class="data-point" style="width: 100%; margin-top: 10px; flex: none;">
+                    <span class="label">CONSTRUCTOR PROFILE</span>
+                    <span class="value" style="font-size: 1.2rem; text-transform: uppercase;">
+                        <span class="team-dot <?php echo htmlspecialchars($user_data['team']); ?>"></span>
+                        <?php echo htmlspecialchars($user_data['team']); ?> Racing
+                    </span>
                 </div>
             </div>
             <button class="start-quiz-btn" onclick="window.location.href='index.php'">LIGHTS OUT - START QUIZ</button>
@@ -67,7 +92,7 @@ $current_rank = "P" . ($rank_data['rank'] + 1);
 
         <section class="card standings-card">
             <div class="card-header">
-                <h2>CHAMPIONSHIP STANDINGS</h2>
+                <h2>DRIVER STANDINGS</h2>
             </div>
             <table class="standings-table">
                 <thead>
@@ -96,24 +121,30 @@ $current_rank = "P" . ($rank_data['rank'] + 1);
             </table>
         </section>
 
-        <section class="card intel-card">
+        <section class="card standings-card">
             <div class="card-header">
-                <h2>PADDOCK INTEL</h2>
+                <h2>CONSTRUCTORS' CHAMPIONSHIP</h2>
             </div>
-            <div class="intel-feed">
-                <div class="intel-item">
-                    <span class="badge fact">FACT</span>
-                    <p>An F1 car generates enough aerodynamic downforce to drive upside down on the ceiling of a tunnel at speeds exceeding 193 km/h.</p>
-                </div>
-                <div class="intel-item">
-                    <span class="badge tip">TIP</span>
-                    <p>Pay close attention to tire compound terminology. Softs (Red) offer peak grip but degrade rapidly, while Hards (White) sacrifice immediate pace for longevity.</p>
-                </div>
-                <div class="intel-item">
-                    <span class="badge local">LOCAL INTEL</span>
-                    <p>The Malaysian street circuit demands precise throttle application due to its narrow apexes and minimal runoff areas.</p>
-                </div>
-            </div>
+            <table class="standings-table">
+                <thead>
+                    <tr><th>Pos</th><th>Constructor</th><th>Total Points</th></tr>
+                </thead>
+                <tbody>
+                    <?php 
+                    $t_pos = 1;
+                    while($t_row = $team_standings_result->fetch_assoc()): 
+                    ?>
+                    <tr>
+                        <td><?php echo $t_pos++; ?></td>
+                        <td style="text-transform: capitalize;">
+                            <span class="team-dot <?php echo htmlspecialchars($t_row['team']); ?>"></span>
+                            <?php echo htmlspecialchars($t_row['team']); ?>
+                        </td>
+                        <td style="font-weight: bold; color: var(--success-cyan);"><?php echo $t_row['team_points']; ?></td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
         </section>
 
     </main>

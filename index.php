@@ -24,13 +24,20 @@ if (!isset($_SESSION['user_id'])) {
         <div id="start-screen" class="screen active">
             <h2>Test Your Formula 1 Knowledge</h2>
             <p>Do you have what it takes to finish P1? Start the lights to find out.</p>
+            
+            <select id="difficulty-select" class="btn secondary-btn" style="background-color: var(--card-bg); margin-bottom: 20px;">
+                <option value="easy">Easy (Safety Car Pace) - 10 Pts/Q</option>
+                <option value="medium" selected>Medium (Race Pace) - 20 Pts/Q</option>
+                <option value="hard">Hard (Qualifying Pace) - 30 Pts/Q</option>
+            </select>
+
             <button id="start-btn" class="btn primary-btn">START RACE</button>
             <button class="btn secondary-btn" onclick="window.location.href='dashboard.php'">BACK TO PIT WALL</button>
         </div>
 
         <div id="quiz-screen" class="screen">
             <div class="progress-container">
-                <span id="question-tracker">Question 1/5</span>
+                <span id="question-tracker">Question 1/10</span>
                 <div class="progress-bar">
                     <div id="progress-fill"></div>
                 </div>
@@ -39,7 +46,7 @@ if (!isset($_SESSION['user_id'])) {
             <h2 id="question-text">Question goes here?</h2>
             
             <div id="options-container" class="options-grid">
-                </div>
+            </div>
 
             <button id="next-btn" class="btn secondary-btn hide">NEXT LAP <span>&#10140;</span></button>
         </div>
@@ -48,8 +55,11 @@ if (!isset($_SESSION['user_id'])) {
             <h2>CHEQUERED FLAG!</h2>
             <p>Your Final Classification:</p>
             <div class="score-display">
-                <span id="score-text">0</span> / <span id="total-text">5</span>
+                <span id="score-text">0</span> / <span id="total-text">10</span>
             </div>
+            <h3 style="color: var(--correct); margin-bottom: 15px; font-style: italic; letter-spacing: 1px;">
+                POINTS EARNED: <span id="points-text">0</span>
+            </h3>
             <p id="feedback-text">Good effort!</p>
             <button id="restart-btn" class="btn primary-btn">RETURN TO DASHBOARD</button>
         </div>
